@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}ניהול מלאי{% endblock %}
+
+{% block content %}
+<style>
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        transition: 0.3s ease-in-out;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">📦 רשימת מלאי</h2>
+
+    <!-- טופס חיפוש -->
+    <div class="card shadow-sm p-4 mb-5">
+        <h5 class="text-right mb-3">🔍 חיפוש חכם</h5>
+        <form method="get" class="row g-3 align-items-center" dir="ltr">
+            <div class="col-md-5">
+                <label for="model" class="form-label fw-bold text-right w-100">דגם</label>
+                <input type="text" name="model" id="model" class="form-control" required placeholder="הזן דגם" value="{{ request.GET.model }}">
+            </div>
+            <div class="col-md-5">
+                <label for="date" class="form-label fw-bold text-right w-100">תאריך יציקה</label>
+                <input type="date" name="date" id="date" class="form-control" value="{{ request.GET.date }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary mt-4">חפש</button>
+                <a href="{% url 'inventory' %}" class="btn btn-secondary mt-2">נקה חיפוש</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- טבלת מוצרים -->
+    <div class="card shadow-sm p-4 mb-5">
+        <h5 class="text-right mb-3">📋 תצוגת המלאי:</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>דגם</th>
+                        <th>מספר יציקה</th>
+                        <th>תאריך יציקה</th>
+                        <th>גובה</th>
+                        <th>רוחב</th>
+                        <th>סוג</th>
+                        <th>כמות</th>
+                        <th>השתמש</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.id }}</td>
+                        <td>{{ product.model }}</td>
+                        <td>{{ product.deploying_number }}</td>
+                        <td>{{ product.date }}</td>
+                        <td>{{ product.height }}</td>
+                        <td>{{ product.width }}</td>
+                        <td>{{ product.type }}</td>
+                        <td><span class="badge bg-info">{{ product.count }}</span></td>
+                        <td>
+                            <form method="post" class="d-flex justify-content-center align-items-center">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="use">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <input type="number" name="amount" min="1" max="{{ product.count }}" class="form-control mx-2" style="width: 80px;" required>
+                                <button type="submit" class="btn btn-outline-success btn-sm">השתמש</button>
+                            </form>
+                        </td>
+                        
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="9">אין מוצרים במלאי</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- הוספת מוצר חדש -->
+    <div class="card shadow-sm p-4 bg-light">
+        <h4 class="text-right mb-4">➕ הוספת מוצר חדש</h4>
+        <form method="post" dir="ltr">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+        
+            <p class="text-right text-muted mb-3"><span class="text-danger">*</span> שדות מסומנים הם שדות חובה</p>
+        
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">
+                        דגם <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" name="model" class="form-control text-right" required placeholder="דגם">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">מספר יציקה</label>
+                    <input type="text" name="deploying_number" class="form-control text-right" placeholder="12345">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">תאריך יציקה</label>
+                    <input type="date" name="date" class="form-control text-right">
+                </div>
+            </div>
+        
+            <div class="row g-3 mt-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">
+                        סוג <span class="text-danger text-right">*</span>
+                    </label>
+                    <select name="type" class="form-control text-right" onchange="autoFillDimensions(this.value)" required>
+                        <option value="פלטה">פלטה</option>
+                        <option value="חתיכה">חתיכה</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">
+                        גובה <span class="text-danger">*</span>
+                    </label>
+                    <input type="number" name="height" id="height" class="form-control text-right" step="0.01" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">
+                        רוחב <span class="text-danger">*</span>
+                    </label>
+                    <input type="number" name="width" id="width" class="form-control text-right" step="0.01" required>
+                </div>
+            </div>
+        
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-right w-100">כמות</label>
+                    <input type="number" name="count" min="1" class="form-control text-right" placeholder="1">
+                </div>
+            </div>
+        
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success w-100 py-2">📥 הוסף למלאי</button>
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+<script>
+function autoFillDimensions(type) {
+    const height = document.getElementById("height");
+    const width = document.getElementById("width");
+
+    if (type === "פלטה") {
+        height.value = 320;
+        width.value = 160;
+        height.readOnly = true;
+        width.readOnly = true;
+    } else {
+        height.value = "";
+        width.value = "";
+        height.readOnly = false;
+        width.readOnly = false;
+    }
+}
+window.onload = function() {
+    autoFillDimensions(document.querySelector('select[name="type"]').value);
+}
+</script>
+{% endblock %}

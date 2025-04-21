@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}הרשמה למערכת{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="text-center mb-4">📥 הרשמה למערכת SaveMe</h2>
+    <p class="text-center text-muted">אנא מלא את הפרטים על מנת להצטרף למערכת</p>
+
+    <form method="post" class="border p-4 rounded shadow bg-light">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>👤 {{ form.username.label }}</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+    
+        <div class="form-group">
+            <label>✉️ {{ form.email.label }}</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+    
+        <div class="form-group">
+            <label>📞 {{ form.phone_number.label }}</label>
+            {{ form.phone_number }}
+            {{ form.phone_number.errors }}
+        </div>
+    
+        <div class="form-group">
+            <label>🔑 {{ form.password1.label }}</label>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+    
+        <div class="form-group">
+            <label>🔁 {{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+    
+        <button type="submit" class="btn btn-success btn-block">🚀 הרשם</button>
+    </form>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info mt-3 text-center">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

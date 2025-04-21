@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        transition: 0.3s ease-in-out;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .custom-table tbody tr:hover {
+        background-color: #343a40 !important;
+        color: #f8f9fa;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-5 bg-white rounded-4">
+        <h2 class="text-center mb-4">📦 פריטים במלאי עבור דגם: {{ model }}</h2>
+
+        {% if pdf_filename %}
+            <div class="text-center mb-4">
+                <a href="/media/pdf_orders/{{ pdf_filename }}" class="btn btn-outline-primary px-4 py-2" download>
+                    📄 הורד את ההזמנה
+                </a>
+            </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success text-center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if products %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table dir="rtl" class="table table-dark table-striped table-bordered custom-table rounded">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>מספר יציקה</th>
+                            <th>תאריך יציקה</th>
+                            <th>גובה</th>
+                            <th>רוחב</th>
+                            <th>סוג</th>
+                            <th>כמות במלאי</th>
+                            <th>שימוש</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.deploying_number }}</td>
+                            <td>{{ product.date }}</td>
+                            <td>{{ product.height }}</td>
+                            <td>{{ product.width }}</td>
+                            <td>{{ product.type }}</td>
+                            <td><span class="badge bg-info">{{ product.count }}</span></td>
+                            <td>
+                                <input type="number" name="use_{{ product.id }}" min="0" max="{{ product.count }}" class="form-control text-center" placeholder="בחר">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg px-5 py-2 rounded-3">💾 השתמש</button>
+            </div>
+        </form>
+
+        {% else %}
+            <p class="text-center text-danger mt-4">⚠️ אין פריטים מהדגם הזה במלאי.</p>
+        {% endif %}
+
+        <hr class="my-5">
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'create_order' %}" class="btn btn-outline-primary px-4 py-2">
+                ↩ חזרה להזמנה חדשה
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-success px-4 py-2">
+                🏠 חזרה לדשבורד
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

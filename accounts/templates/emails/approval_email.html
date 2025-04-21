@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .approve {
+            background-color: #28a745;
+        }
+        .reject {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h2>🛂 בקשת הרשמה חדשה</h2>
+    <p><strong>שם משתמש:</strong> {{ username }}</p>
+    <p><strong>אימייל:</strong> {{ email }}</p>
+    <p><strong>טלפון:</strong> {{ phone }}</p>
+
+    <a href="{{ approve_link }}" class="btn approve">✅ אשר משתמש</a>
+    <a href="{{ reject_link }}" class="btn reject">❌ דחה משתמש</a>
+</body>
+</html>

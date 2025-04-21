@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: SaveMe
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn SaveMe.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: SaveMe.settings
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        transition: 0.3s ease-in-out;
+        }
+    </style>
+    <style>
+        .btn-section {
+          margin-top: 60px;
+        }
+    </style>
+      
+  
+    <div class="container mt-5">
+        <div class="card shadow-lg p-5" style="min-height: 500px;">
+        <h2 class="mb-3 text-center">שלום {{ user.username }} 👋</h2>
+        <hr class="border border-2 border-secondary my-4">
+
+        <p class="lead text-center ">
+            ברוך הבא למערכת InvenPro — המקום שלך לניהול מלאים והזמנות.
+        </p>
+        
+
+        <div class="row justify-content-center btn-section pt-5">
+            <div class="col-md-4 mb-3">
+            <a href="{% url 'create_order' %}" class="btn btn-outline-primary btn-lg w-100 py-4 rounded-4 shadow-sm transition">
+                📝 יצירת הזמנה חדשה
+            </a>
+            </div>
+            <div class="col-md-4 mb-3">
+            <a href="{% url 'inventory' %}" class="btn btn-outline-success btn-lg w-100 py-4 rounded-4 shadow-sm transition">
+                📦 מעבר לניהול מלאי
+            </a>
+            </div>
+        </div>
+    </div>
+  </div>
+  
+{% endblock %}
